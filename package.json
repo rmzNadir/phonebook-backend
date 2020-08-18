@@ -7,7 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js"
-
   },
   "repository": {
     "type": "git",
@@ -18,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/rmzNadir/phonebook-backend/issues"
   },
-  "homepage": "https://github.com/rmzNadir/phonebook-backend#readme"
+  "homepage": "https://github.com/rmzNadir/phonebook-backend#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
