@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose')
 
 //check for user password password
@@ -23,7 +24,6 @@ const personSchema = new mongoose.Schema({  //This is the schema that tells Mong
 })
 
 const Person = mongoose.model('Person', personSchema) //This is the model, 'Person' is the singular name of the model.
-
 
 //Fetch all phonebook entries
 
