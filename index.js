@@ -1,12 +1,11 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
 
 const Person = require("./models/person");
-const { db, update } = require("./models/person");
+const { db } = require("./models/person");
 
 app.use(cors());
 
@@ -14,7 +13,7 @@ app.use(express.json());
 
 app.use(express.static("build"));
 
-morgan.token("body", function (req, res) {
+morgan.token("body", function (req) {
   return JSON.stringify(req.body);
 });
 
@@ -44,14 +43,6 @@ app.use(
   })
 );
 
-app.get("/api/persons", (req, res) => {
-  Person.find({})
-    .then((persons) => {
-      res.json(persons);
-    })
-    .catch((err) => next(err));
-});
-
 app.get("/info", async (req, res) => {
   let count = await db.collection("people").countDocuments();
   if (count === 0) {
@@ -71,6 +62,14 @@ app.get("/info", async (req, res) => {
     </div>
    `);
   }
+});
+
+app.get("/api/persons", (req, res, next) => {
+  Person.find({})
+    .then((persons) => {
+      res.json(persons);
+    })
+    .catch((err) => next(err));
 });
 
 app.get("/api/persons/:id", (req, res, next) => {
@@ -95,10 +94,10 @@ app.put("/api/persons/:id", (req, res, next) => {
     id: body.id,
   };
   Person.findByIdAndUpdate(req.params.id, person, {
-    new: true, //IMPORTANT, without new: true the response would send the old version before the update 
+    new: true, //IMPORTANT, without new: true the response would send the old version before the update
     runValidators: true, //IMPORTANT, runValidators is essential to enable Validation
     context: "query", //IMPORTANT, without setting the context we would get the error 'Cannot read property 'ownerDocument' of null'
-  }) 
+  })
     .then((updatedPerson) => {
       return updatedPerson.toJSON();
     })
@@ -110,7 +109,7 @@ app.put("/api/persons/:id", (req, res, next) => {
 
 app.delete("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then((person) => {
+    .then(() => {
       res.status(204).end();
     })
     .catch((err) => next(err));
@@ -147,8 +146,8 @@ const errorHandler = (err, req, res, next) => {
   } else if (err.name === "ValidationError") {
     return res
       .status(400)
-      .json({ error: `${err.name}: ${err.message}`, errorName: err.name })//we send the error message as well as the error name so we can differentiate between multiple types of errors
-   } 
+      .json({ error: `${err.name}: ${err.message}`, errorName: err.name }); //we send the error message as well as the error name so we can differentiate between multiple types of errors
+  }
   next(err);
 };
 
