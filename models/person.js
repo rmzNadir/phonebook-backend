@@ -1,11 +1,12 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 
 //check for user password password
 
 const url = process.env.MONGODB_URI
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify:false})
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify:false, useCreateIndex:true})
     .then(result =>{
         console.log('connected to MongoDB')
     })
@@ -15,10 +16,24 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFind
 
 //Schema and model definition
 
+
 const personSchema = new mongoose.Schema({  //This is the schema that tells Mongoose how the objects are to be stored.
-    name: String,
-    phone: String,
+  name: {
+      type: String,
+      minlength: 3,
+      required: true,
+      unique:true,
+  },
+  phone: {
+      type: String,
+      minlength: 8,
+      required: true,
+      unique: true,
+  } 
+  
 })
+
+personSchema.plugin(uniqueValidator)
 
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
